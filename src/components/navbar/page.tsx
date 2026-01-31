@@ -51,7 +51,7 @@ export default function Navbar() {
             </NavigationMenu>
 
             {/* User Account Dropdown */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger> <UserIcon /></DropdownMenuTrigger>
                 <DropdownMenuContent>
