@@ -10,7 +10,8 @@ import {
 import Image from "next/image";
 import MyStar from "@/components/myStarIcon/page";
 import { Button } from "@/components/ui/button";
-import { HeartIcon } from "lucide-react";
+import { HeartIcon, ShoppingCartIcon } from "lucide-react";
+import Link from "next/link";
 
 export default async function Products() {
 
@@ -28,45 +29,52 @@ export default async function Products() {
   return (
     <>
       {/* Responsive Div From Tailwind */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8 px-4">
 
         {/* Products Loop From API */}
         {products.map((product) => <div key={product.id}>
+
           <Card className="">
-            
-            {/* Product Image */}
-            <Image src={product.imageCover} className="w-full object-cover" alt={product.title} height={300} width={300} />
+            {/* Link Around The Product Card With Out Footer To Navigate The User Product Details Page */}
+            <Link href={`/products/${product.id}`}>
 
-            {/* Card Heading */}
-            <CardHeader>
-              {/* split(" ", 2).join(" ") To Make All Names Two Words Only */}
-              <CardTitle>{product.title.split(" ", 2).join(" ")}</CardTitle>
-              <CardDescription>{product.category.name}</CardDescription>
-              <CardDescription>{product.brand.name}</CardDescription>
-            </CardHeader>
+              {/* Product Image */}
+              <Image src={product.imageCover} className="w-full object-cover" alt={product.title} height={300} width={300} />
 
-            <CardContent>
+              {/* Card Heading */}
+              <CardHeader>
+                <CardDescription>{product.brand.name}</CardDescription>
+                {/* split(" ", 2).join(" ") To Make All Names Two Words Only */}
+                <CardTitle>{product.title.split(" ", 2).join(" ")}</CardTitle>
+                <CardDescription>{product.category.name}</CardDescription>
+              </CardHeader>
 
-              {/* Rating Part */}
-              <div className="flex">
-                <MyStar />
-                <MyStar />
-                <MyStar />
-                <MyStar />
-                <MyStar />
+              <CardContent>
 
-                <p>{product.ratingsAverage}</p>
-              </div>
+                <div className="flex justify-between">
+                  {/* Rating Part */}
+                  <div className="flex">
+                    <MyStar />
+                    <MyStar />
+                    <MyStar />
+                    <MyStar />
+                    <MyStar />
+                    <p>{product.ratingsAverage}</p>
+                  </div>
 
-              {/* Price Part */}
-              <p className="pt-1"> Price : <span className="font-bold">{product.price}</span> EGP </p>
-            </CardContent>
+                  {/* Price Part */}
+                  <p className="font-bold"> {product.price} EGP </p>
+                </div>
 
+              </CardContent>
+
+            </Link>
             {/* Add To Cart & Fav */}
-            <CardFooter className="gap-2">
-              <Button className="grow">Add To Cart</Button>
+            <CardFooter className="gap-2 mt-3">
+              <Button className="grow"> <ShoppingCartIcon /> Add To Cart</Button>
               <HeartIcon />
             </CardFooter>
+
           </Card>
         </div>
         )}
