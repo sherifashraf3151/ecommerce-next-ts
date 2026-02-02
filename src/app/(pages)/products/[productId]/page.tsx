@@ -1,18 +1,18 @@
+
 import { ProductI } from "@/interfaces";
 import { Params } from "next/dist/server/request/params"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import Image from "next/image";
 import MyStar from "@/components/myStarIcon/page";
-import { HeartIcon, ShoppingCartIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { HeartIcon } from "lucide-react";
+import ProductSlider from "@/components/productSlider/ProductSlider";
+import AddToCart from "@/components/addToCart/AddToCart";
 
 // استقبال params من Next.js
 // params فيها القيم الديناميك اللي جاية من الـ URL
@@ -32,10 +32,10 @@ export default async function ProductDetails({ params }: { params: Params }) {
 
   return (
     <>
-      <Card className="grid md:grid-cols-2 items-center w-3/4 my-8 mx-auto">
+      <Card className="grid md:grid-cols-2 items-center w-3/4 lg:w-1/2 my-8 mx-auto">
 
         <div>
-          <Image src={product.imageCover} alt={product.title} width={300} height={300} />
+          <ProductSlider images={product.images} altContent={product.title} />
         </div>
 
         <div>
@@ -62,7 +62,8 @@ export default async function ProductDetails({ params }: { params: Params }) {
           </CardContent>
 
           <CardFooter className="gap-2 mt-3">
-            <Button className="grow"> <ShoppingCartIcon/> Add To Cart</Button>
+            {/* Send Product id To Choose him And Send it To backend */}
+            <AddToCart productId={product.id} />
             <HeartIcon />
           </CardFooter>
         </div>

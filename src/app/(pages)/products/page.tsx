@@ -9,77 +9,73 @@ import {
 } from "@/components/ui/card"
 import Image from "next/image";
 import MyStar from "@/components/myStarIcon/page";
-import { Button } from "@/components/ui/button";
-import { HeartIcon, ShoppingCartIcon } from "lucide-react";
+import { HeartIcon } from "lucide-react";
 import Link from "next/link";
+import AddToCart from "@/components/addToCart/AddToCart";
 
 export default async function Products() {
+  const response = await fetch(
+    "https://ecommerce.routemisr.com/api/v1/products",
+    { cache: "no-store" }
+  )
 
-  // Get The Data From The API in Variable (response)
-  const response = await fetch('https://ecommerce.routemisr.com/api/v1/products')
+  if (!response.ok) {
+    throw new Error("Failed to fetch products")
+  }
 
-  // Parse The Response To JSON Format in Variable {data} To destructure it
-  // {data: ProductI[]} it`s a Ts interFace From interfaces File
-  // {data:products } To use data as products Variable
-  const { data: products }: { data: ProductI[] } = await response.json()
-
-  console.log(products);
-
+  const json = await response.json()
+  const products: ProductI[] = json.data
 
   return (
-    <>
-      {/* Responsive Div From Tailwind */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8 px-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8 px-4">
+      {Array.isArray(products) && products.map((product) => (
+        <Card className="" key={product.id}>
+          {/* Link Around The Product Card With Out Footer To Navigate The User Product Details Page */}
+          <Link href={`/products/${product.id}`}>
 
-        {/* Products Loop From API */}
-        {products.map((product) => <div key={product.id}>
+            {/* Product Image */}
+            <Image src={product.imageCover} className="w-full object-cover" alt={product.title} height={300} width={300} />
 
-          <Card className="">
-            {/* Link Around The Product Card With Out Footer To Navigate The User Product Details Page */}
-            <Link href={`/products/${product.id}`}>
+            {/* Card Heading */}
+            <CardHeader>
+              <CardDescription>{product.brand.name}</CardDescription>
+              {/* split(" ", 2).join(" ") To Make All Names Two Words Only */}
+              <CardTitle>{product.title.split(" ", 2).join(" ")}</CardTitle>
+              <CardDescription>{product.category.name}</CardDescription>
+            </CardHeader>
 
-              {/* Product Image */}
-              <Image src={product.imageCover} className="w-full object-cover" alt={product.title} height={300} width={300} />
+            <CardContent>
 
-              {/* Card Heading */}
-              <CardHeader>
-                <CardDescription>{product.brand.name}</CardDescription>
-                {/* split(" ", 2).join(" ") To Make All Names Two Words Only */}
-                <CardTitle>{product.title.split(" ", 2).join(" ")}</CardTitle>
-                <CardDescription>{product.category.name}</CardDescription>
-              </CardHeader>
-
-              <CardContent>
-
-                <div className="flex justify-between">
-                  {/* Rating Part */}
-                  <div className="flex">
-                    <MyStar />
-                    <MyStar />
-                    <MyStar />
-                    <MyStar />
-                    <MyStar />
-                    <p>{product.ratingsAverage}</p>
-                  </div>
-
-                  {/* Price Part */}
-                  <p className="font-bold"> {product.price} EGP </p>
+              <div className="flex justify-between">
+                {/* Rating Part */}
+                <div className="flex">
+                  <MyStar />
+                  <MyStar />
+                  <MyStar />
+                  <MyStar />
+                  <MyStar />
+                  <p>{product.ratingsAverage}</p>
                 </div>
 
-              </CardContent>
+                {/* Price Part */}
+                <p className="font-bold"> {product.price} EGP </p>
+              </div>
 
-            </Link>
-            {/* Add To Cart & Fav */}
-            <CardFooter className="gap-2 mt-3">
-              <Button className="grow"> <ShoppingCartIcon /> Add To Cart</Button>
-              <HeartIcon />
-            </CardFooter>
+            </CardContent>
 
-          </Card>
-        </div>
-        )}
-      </div>
+          </Link>
+          {/* Add To Cart & Fav */}
+          <CardFooter className="gap-2 mt-3">
+            <AddToCart productId={product.id} />
+            <HeartIcon />
+          </CardFooter>
 
-    </>
+        </Card>
+      ))}
+    </div>
   )
 }
+
+
+
+
