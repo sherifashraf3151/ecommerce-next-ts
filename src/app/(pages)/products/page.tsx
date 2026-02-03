@@ -16,7 +16,7 @@ import AddToCart from "@/components/addToCart/AddToCart";
 export default async function Products() {
   const response = await fetch(
     "https://ecommerce.routemisr.com/api/v1/products",
-    { cache: "no-store" }
+    { next: { revalidate: 120 } }
   )
 
   if (!response.ok) {
@@ -48,11 +48,7 @@ export default async function Products() {
 
               <div className="flex justify-between">
                 {/* Rating Part */}
-                <div className="flex">
-                  <MyStar />
-                  <MyStar />
-                  <MyStar />
-                  <MyStar />
+                <div className="flex  gap-2 items-center justifty-center">
                   <MyStar />
                   <p>{product.ratingsAverage}</p>
                 </div>

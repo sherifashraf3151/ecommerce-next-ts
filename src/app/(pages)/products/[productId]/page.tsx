@@ -23,7 +23,7 @@ export default async function ProductDetails({ params }: { params: Params }) {
   const { productId } = await params;
 
   // Get The Data From The API in Variable (response)
-  const response = await fetch('https://ecommerce.routemisr.com/api/v1/products/' + productId)
+  const response = await fetch('https://ecommerce.routemisr.com/api/v1/products/' + productId, { next: { revalidate: 120 } })
 
   // Parse The Response To JSON Format in Variable {data} To destructure it
   // { data: Product } Use data as Product
@@ -49,11 +49,7 @@ export default async function ProductDetails({ params }: { params: Params }) {
             <CardDescription>{product.category.name}</CardDescription>
             <div className="flex gap-1">
               <MyStar />
-              <MyStar />
-              <MyStar />
-              <MyStar />
-              <MyStar />
-              <p> ( {product.ratingsQuantity} ) </p>
+              <p>{product.ratingsAverage} </p>
             </div>
             <div className="mt-3 flex justify-between">
               <p className="font-bold">{product.price} EGP</p>

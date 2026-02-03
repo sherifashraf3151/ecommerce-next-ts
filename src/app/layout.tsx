@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar/page";
 import Footer from "@/components/footer/Page";
 import { Toaster } from "react-hot-toast";
+import CartContextProvider from "@/components/context/cartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <div className="container mx-auto min-h-screen">
-          {children}
-          <Toaster />
-        </div>
-        <Footer />
+        <CartContextProvider>
+          <Navbar />
+          <div className="container mx-auto min-h-screen">
+            {children}
+            <Toaster />
+          </div>
+          <Footer />
+        </CartContextProvider>
       </body>
     </html>
   );

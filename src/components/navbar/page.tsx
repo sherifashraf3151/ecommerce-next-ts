@@ -1,3 +1,4 @@
+'use client'
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,11 +15,17 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { ShoppingCartIcon, UserIcon, MenuIcon } from "lucide-react"
+import { ShoppingCartIcon, UserIcon, MenuIcon, Loader } from "lucide-react"
+import { useContext } from "react"
+import { CartContext } from "../context/cartContext"
 
 export default function Navbar() {
+
+  // Data Coming From Context in cartContext File
+  const { cartData, isLoading } = useContext(CartContext)
+
   return (
-    <nav className="bg-gray-200 text-xl font-semibold py-3">
+    <nav className="bg-gray-200 text-xl font-semibold py-3 sticky top-0">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
 
@@ -98,7 +105,7 @@ export default function Navbar() {
               <Link href="/cart">
                 <ShoppingCartIcon className="h-6 w-6" />
                 <Badge className="absolute -top-3 -end-3 h-5 min-w-5 rounded-full px-1 text-xs">
-                  3
+                  { isLoading ? <Loader className='animate-spin'/> : cartData?.numOfCartItems }
                 </Badge>
               </Link>
             </div>
