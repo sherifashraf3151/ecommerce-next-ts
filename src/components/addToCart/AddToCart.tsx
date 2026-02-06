@@ -34,6 +34,6 @@ export default function AddToCart({ productId }: { productId: string }) {
 
 
   return (
-    <Button onClick={addProductToCart} className="grow"> {isLoading ? <Loader className='animate-spin' /> : <ShoppingCartIcon />} Add To Cart</Button>
+    <Button disabled={isLoading} onClick={addProductToCart} className="grow  cursor-pointer"> {isLoading ? <Loader className='animate-spin' /> : <ShoppingCartIcon />} Add To Cart</Button>
   )
 }

@@ -4,8 +4,9 @@ import { CartContext } from '@/components/context/cartContext'
 import { Button } from '@/components/ui/button'
 import { CartResponse } from '@/interfaces'
 import { count, log } from 'console'
-import { Loader, Trash } from 'lucide-react'
+import { Loader, ShoppingCartIcon, Trash } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useContext, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -17,9 +18,9 @@ export default function Cart() {
   const [isClearing, setIsClearing] = useState<boolean>(false)
 
   // This line To fix API issue product string
-  if ( typeof cartData?.data.products[0]?.product == 'string' || cartData == null ) {
+  if (typeof cartData?.data.products[0]?.product == 'string' || cartData == null) {
     getCart()
-  } 
+  }
 
 
   // Remove Specific item from Cart Function
@@ -45,7 +46,7 @@ export default function Cart() {
   async function updateCartItem(productId: string, count: number) {
 
     // Remove The item if Equal Zero 
-    if ( count <= 0 ) {
+    if (count <= 0) {
       removeCartItem(productId)
     }
 
@@ -83,7 +84,7 @@ export default function Cart() {
     if (data.message == 'success') {
       toast.success('Cart is Clear')
       setCartData(null)
-      
+
     }
     setIsClearing(false)
   }
@@ -92,7 +93,8 @@ export default function Cart() {
 
   return (
     <>
-      {isLoading || typeof cartData?.data.products[0]?.product == 'string' ? <Loading /> :
+      {isLoading || typeof cartData?.data.products[0]?.product == 'string' ? <Loading /> : cartData?.numOfCartItems! > 0 ?
+        // In Case Cart is Not Empaty
         <div className="container mx-auto py-6 px-4">
 
           <h1 className='text-3xl font-bold tracking-tight'>Shopping Cart</h1>
@@ -123,20 +125,19 @@ export default function Cart() {
 
                     <div className="mt-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <button disabled={ item.count == 1 } onClick={() => { updateCartItem(item.product.id, (item.count - 1)) }} aria-label='decrease' className='size-8 rounded-lg border hover:bg-accent'>
+                        <button disabled={item.count == 1 || updatingingId == item.product.id || removingId == item.product.id} onClick={() => { updateCartItem(item.product.id, (item.count - 1)) }} aria-label='decrease' className='size-8 rounded-lg border hover:bg-accent'>
                           -
                         </button>
                         <span className='w-6 text-center font-medium'>
-                          { updatingingId == item.product.id ? <Loader className='animate-spin duration-200' /> : item.count}
+                          {updatingingId == item.product.id ? <Loader className='animate-spin duration-200' /> : item.count}
                         </span>
-                        <button onClick={() => { updateCartItem(item.product.id, (item.count + 1)) }} aria-label='increace' className='size-8 rounded-lg border hover:bg-accent'>
+                        <button disabled={ updatingingId == item.product.id || removingId == item.product.id} onClick={() => { updateCartItem(item.product.id, (item.count + 1)) }} aria-label='increace' className='size-8 rounded-lg border hover:bg-accent'>
                           +
                         </button>
                       </div>
-                      <button onClick={() => removeCartItem(item.product.id)} aria-label='remove' className='text-sm cursor-pointer flex text-white hover:scale-105 duration-200 items-center bg-red-500 p-2 rounded-xl gap-2'>
+                      <button disabled={removingId == item.product.id} onClick={() => removeCartItem(item.product.id)} aria-label='remove' className='text-sm cursor-pointer flex text-white items-center bg-red-500 p-2 rounded-xl gap-2 hover:scale-105 duration-200 disabled:opacity-60 disabled:hover:scale-100'>
                         {/* add Loader only when removingId == item.product.id Not in all items  */}
-                        {removingId == item.product.id && <Loader className='animate-spin duration-200' />}
-                        Remove
+                        { removingId == item.product.id ? <Loader className='animate-spin duration-200' /> : "Remove"}
                       </button>
                     </div>
                   </div>
@@ -172,13 +173,41 @@ export default function Cart() {
                   <Button className='w-full text-lg mt-2'> Continue Shopping </Button>
                 </div>
 
-                <Button onClick={() => { clearCart() }} variant={'outline'} className='mt-2 ms-auto text-destructive hover:text-destructive flex'> <Trash /> Clear Cart </Button>
+                <Button onClick={() => { clearCart() }} variant={'outline'} className='mt-2 ms-auto text-destructive hover:text-destructive flex'> { isClearing ? <Loader className='animate-spin'/> : <Trash /> } Clear Cart </Button>
               </div>
 
             </div>
 
           </div>
         </div>
+        :
+        // In Case Cart Is Empaty
+        <div className="flex min-h-[75vh] items-center justify-center px-4">
+          <div className="max-w-md text-center rounded-2xl border bg-card p-8 shadow-sm">
+
+            <div className="mx-auto mb-6 flex size-24 items-center justify-center rounded-full bg-muted">
+              <ShoppingCartIcon className="size-10 text-muted-foreground" />
+            </div>
+
+            <h2 className="text-3xl font-semibold">
+              Your cart is empty
+            </h2>
+
+            <p className="mt-3 text-muted-foreground">
+              You haven’t added any products yet.
+              Start exploring and discover something you’ll love.
+            </p>
+
+            <Link href="/products" className="mt-6 inline-block w-full">
+              <Button size="lg" className="w-full cursor-pointer">
+                Browse Products
+              </Button>
+            </Link>
+
+          </div>
+        </div>
+
+
       }
     </>
   )
