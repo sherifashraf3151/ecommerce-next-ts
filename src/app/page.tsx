@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import AddToCart from "@/components/addToCart/AddToCart"
 import { HeartIcon } from "lucide-react"
+import MyStar from "@/components/myStarIcon/page"
 
 // Interfaces
 interface ProductI {
@@ -121,7 +122,7 @@ export default async function Home() {
                     <p className="font-bold text-gray-900">{product.price} EGP</p>
                     <div className="flex items-center gap-1">
                       <span className="text-gray-700">{product.ratingsAverage}</span>
-                      <i className="fa-solid fa-star text-yellow-400 text-sm"></i>
+                      <MyStar/>
                     </div>
                   </div>
                 </div>
