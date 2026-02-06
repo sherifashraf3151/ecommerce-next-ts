@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <CartContextProvider>
           <Navbar />
-          <div className="container mx-auto min-h-screen">
+          <div className="container mx-auto min-h-screen pt-20">
             {children}
             <Toaster />
           </div>

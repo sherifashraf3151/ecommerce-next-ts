@@ -27,51 +27,58 @@ export default async function Products() {
   const products: ProductI[] = json.data
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8 px-4">
-      {Array.isArray(products) && products.map((product) => (
-        <Card className="" key={product.id}>
-          {/* Link Around The Product Card With Out Footer To Navigate The User Product Details Page */}
-          <Link href={`/products/${product.id}`}>
+    <div className="container mx-auto px-4 md:px-10 py-12">
+      
+      {/* الصفحة الرئيسية Our Products */}
+      <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-12 text-center tracking-tight">
+        Our Products
+      </h1>
 
-            {/* Product Image */}
-            <Image src={product.imageCover} className="w-full object-cover" alt={product.title} height={300} width={300} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {Array.isArray(products) && products.slice().reverse().map((product) => (
+          <Card key={product.id} className="rounded-2xl shadow-lg bg-white flex flex-col overflow-hidden hover:shadow-2xl transition-shadow duration-300">
 
-            {/* Card Heading */}
-            <CardHeader>
-              <CardDescription>{product.brand.name}</CardDescription>
-              {/* split(" ", 2).join(" ") To Make All Names Two Words Only */}
-              <CardTitle>{product.title.split(" ", 2).join(" ")}</CardTitle>
-              <CardDescription>{product.category.name}</CardDescription>
-            </CardHeader>
-
-            <CardContent>
-
-              <div className="flex justify-between">
-                {/* Rating Part */}
-                <div className="flex  gap-2 items-center justifty-center">
-                  <MyStar />
-                  <p>{product.ratingsAverage}</p>
-                </div>
-
-                {/* Price Part */}
-                <p className="font-bold"> {product.price} EGP </p>
+            {/* Link حول الصورة والعنوان */}
+            <Link href={`/products/${product.id}`} className="flex flex-col flex-1">
+              {/* صورة المنتج */}
+              <div className="w-full aspect-square relative overflow-hidden rounded-t-2xl">
+                <Image
+                  src={product.imageCover}
+                  alt={product.title}
+                  fill
+                  className="object-cover object-center transition-transform duration-300 hover:scale-105"
+                />
               </div>
 
-            </CardContent>
+              {/* تفاصيل المنتج */}
+              <CardHeader className="space-y-1 p-4 pt-3">
+                <CardDescription className="text-blue-600 font-semibold text-sm">{product.brand.name}</CardDescription>
+                <CardTitle className="text-lg font-bold text-gray-800">{product.title.split(" ", 2).join(" ")}</CardTitle>
+                <CardDescription className="text-gray-500 text-sm">{product.category.name}</CardDescription>
+              </CardHeader>
 
-          </Link>
-          {/* Add To Cart & Fav */}
-          <CardFooter className="gap-2 mt-3">
-            <AddToCart productId={product.id} />
-            <HeartIcon />
-          </CardFooter>
+              <CardContent className="p-4 pt-1">
+                <div className="flex justify-between items-center">
+                  {/* التقييم */}
+                  <div className="flex items-center gap-1">
+                    <MyStar />
+                    <p className="text-gray-700 font-medium text-sm">{product.ratingsAverage}</p>
+                  </div>
+                  {/* السعر */}
+                  <p className="font-bold text-gray-900 text-sm md:text-base">{product.price} EGP</p>
+                </div>
+              </CardContent>
+            </Link>
 
-        </Card>
-      ))}
+            {/* AddToCart + Heart */}
+            <CardFooter className="flex gap-4 p-4 pt-2">
+              <AddToCart productId={product.id} className="flex-1" />
+              <HeartIcon className="w-6 h-6 text-gray-800 cursor-pointer transition-transform hover:scale-110 hover:text-red-500" />
+            </CardFooter>
+
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }
-
-
-
-

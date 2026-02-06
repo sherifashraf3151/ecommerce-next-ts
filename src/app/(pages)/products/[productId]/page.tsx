@@ -1,4 +1,3 @@
-
 import { ProductI } from "@/interfaces";
 import { Params } from "next/dist/server/request/params"
 import {
@@ -13,58 +12,79 @@ import MyStar from "@/components/myStarIcon/page";
 import { HeartIcon } from "lucide-react";
 import ProductSlider from "@/components/productSlider/ProductSlider";
 import AddToCart from "@/components/addToCart/AddToCart";
+import { notFound } from "next/navigation";
+import Image from "next/image";
 
-// استقبال params من Next.js
-// params فيها القيم الديناميك اللي جاية من الـ URL
 export default async function ProductDetails({ params }: { params: Params }) {
 
-  // استخراج productId من params
-  // مثال: /products/123 => productId = "123"
   const { productId } = await params;
 
-  // Get The Data From The API in Variable (response)
   const response = await fetch('https://ecommerce.routemisr.com/api/v1/products/' + productId, { next: { revalidate: 120 } })
-
-  // Parse The Response To JSON Format in Variable {data} To destructure it
-  // { data: Product } Use data as Product
-  // {data} type is ProductI
   const { data: product }: { data: ProductI } = await response.json();
 
-  return (
-    <>
-      <Card className="grid md:grid-cols-2 items-center w-3/4 lg:w-1/2 my-8 mx-auto">
+  if (!product) {
+    notFound();
+  }
 
-        <div>
-          <ProductSlider images={product.images} altContent={product.title} />
+  return (
+    <div className="min-h-screen flex justify-center items-start bg-gray-50 py-12 px-4">
+      <Card className="grid md:grid-cols-2 gap-8 items-start w-full max-w-5xl p-6 rounded-2xl shadow-2xl bg-white">
+
+        {/* Slider للصور الرئيسية */}
+        <div className="flex justify-center md:order-1">
+          <ProductSlider
+            images={product.images}
+            altContent={product.title}
+          />
         </div>
 
-        <div>
-          <CardHeader>
-            <CardDescription>{product.brand.name}</CardDescription>
-            <CardTitle>{product.title}</CardTitle>
-            <CardDescription>{product.description}</CardDescription>
+        {/* التفاصيل */}
+        <div className="flex flex-col justify-between md:order-2">
+          <CardHeader className="space-y-2">
+            <CardDescription className="text-blue-600 font-semibold">{product.brand.name}</CardDescription>
+            <CardTitle className="text-3xl md:text-4xl font-extrabold text-gray-800">{product.title}</CardTitle>
+            <CardDescription className="text-gray-600">{product.description}</CardDescription>
           </CardHeader>
 
-          <CardContent>
-            <CardDescription>{product.category.name}</CardDescription>
-            <div className="flex gap-1">
+          <CardContent className="space-y-3">
+            <CardDescription className="text-gray-500">{product.category.name}</CardDescription>
+
+            <div className="flex items-center gap-2">
               <MyStar />
-              <p>{product.ratingsAverage} </p>
+              <p className="font-medium text-gray-700">{product.ratingsAverage}</p>
             </div>
-            <div className="mt-3 flex justify-between">
-              <p className="font-bold">{product.price} EGP</p>
-              <p className="font-bold">Quantity: {product.quantity}</p>
+
+            <div className="flex justify-between items-center mt-4">
+              <p className="font-bold text-xl text-gray-900">{product.price} EGP</p>
+              <p className="font-semibold text-gray-700">Quantity: {product.quantity}</p>
             </div>
           </CardContent>
 
-          <CardFooter className="gap-2 mt-3">
-            {/* Send Product id To Choose him And Send it To backend */}
-            <AddToCart productId={product.id} />
-            <HeartIcon />
+          <CardFooter className="flex flex-col md:flex-col gap-4 mt-6">
+            {/* AddToCart + Heart */}
+            <div className="flex gap-4 items-center w-full">
+              <AddToCart productId={product.id} className="flex-1" />
+              <HeartIcon className="w-8 h-8 text-black cursor-pointer transition-transform hover:scale-110" />
+            </div>
+
+
+            {/* Gallery للصور الإضافية على الشاشات الكبيرة */}
+            <div className="hidden md:grid md:grid-cols-4 gap-3 mt-4">
+              {product.images.map((img, index) => (
+                <Image
+                  width={300}
+                  height={300}
+                  key={index}
+                  src={img}
+                  alt={`${product.title} ${index + 1}`}
+                  className="w-full h-36 object-cover rounded-lg shadow-md hover:scale-105 transition-transform cursor-pointer"
+                />
+              ))}
+            </div>
           </CardFooter>
         </div>
 
       </Card>
-    </>
+    </div>
   )
 }

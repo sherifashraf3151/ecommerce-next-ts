@@ -1,34 +1,37 @@
-import MyStar from '@/components/myStarIcon/page'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { BrandI } from '@/interfaces/brand'
-import { HeartIcon, ShoppingCartIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default async function Brands() {
-
-  // Get The Data From The API in Variable (response)
-  const response = await fetch('https://ecommerce.routemisr.com/api/v1/brands',
-    { next: { revalidate: 300 } })
-
-  // Parse The Response To JSON Format in Variable {data} To destructure it
-  // {data: BrandI[]} it`s a Ts interFace From interfaces File
-  // {data:brands } To use data as brands Variable
+  const response = await fetch('https://ecommerce.routemisr.com/api/v1/brands', { next: { revalidate: 300 } })
   const { data: brands }: { data: BrandI[] } = await response.json()
 
-  console.log(brands);
-
   return (
-    <div className="container mx-auto px-10">
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 my-10">
+    <div className="container mx-auto px-6 md:px-10 py-12">
+      <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-8 text-center">
+        Our Brands
+      </h1>
+
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-6 md:gap-8">
         {brands?.map((brand) => (
           <Link href={`/brands/${brand._id}`} key={brand._id}>
-            <div className=" flex flex-col shadow-lg items-center rounded-2xl border border-[#e0e0e0] p-5 cursor-pointer">
-              <div className="group w-25 h-25 bg-[#f9fafb] rounded-full p-4">
-                <Image src={brand.image} alt="Brand Image" className="w-full h-full object-contain group-hover:scale-[1.1] transition-all duration-300" width={300} height={300} />
+            <div className="flex flex-col items-center rounded-2xl border border-gray-200 p-6 bg-white shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer group">
+              
+              {/* Circular background for brand image */}
+              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gray-50 flex items-center justify-center p-4 mb-4 transition-transform duration-300 group-hover:scale-105">
+                <Image
+                  src={brand.image}
+                  alt={brand.name}
+                  width={100}
+                  height={100}
+                  className="object-contain w-full h-full"
+                />
               </div>
-              <h2 className="text-[#212121] font-semibold text-[18px] mt-5">{brand.name}</h2>
+
+              {/* Brand Name */}
+              <h2 className="text-gray-900 font-semibold text-lg md:text-xl text-center transition-colors duration-300 group-hover:text-gray-700">
+                {brand.name}
+              </h2>
             </div>
           </Link>
         ))}
