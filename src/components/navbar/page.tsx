@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { ShoppingCartIcon, UserIcon, MenuIcon, Loader } from "lucide-react"
+import { ShoppingCartIcon, UserIcon, MenuIcon, Loader2 } from "lucide-react"
 import { useContext } from "react"
 import { CartContext } from "../context/cartContext"
 
@@ -25,13 +25,13 @@ export default function Navbar() {
   const { cartData, isLoading } = useContext(CartContext)
 
   return (
-    <nav className="bg-gray-200 text-xl font-semibold py-3 sticky top-0">
+    <nav className="bg-gray-200 text-xl font-semibold py-3">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
 
           {/* Brand */}
-          <h1 className="text-2xl">
-            <Link href="/">ShopMart</Link>
+          <h1 className="text-2xl font-bold">
+            <Link href="/">NextBuy</Link>
           </h1>
 
           {/* Desktop Navigation */}
@@ -105,7 +105,7 @@ export default function Navbar() {
               <Link href="/cart">
                 <ShoppingCartIcon className="h-6 w-6" />
                 <Badge className="absolute -top-3 -end-3 h-5 min-w-5 rounded-full px-1 text-xs">
-                  { isLoading ? <Loader className='animate-spin'/> : cartData?.numOfCartItems }
+                  { isLoading ? <Loader2 className='animate-spin'/> : cartData?.numOfCartItems }
                 </Badge>
               </Link>
             </div>

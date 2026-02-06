@@ -2,20 +2,97 @@
 import Loading from '@/app/loading'
 import { CartContext } from '@/components/context/cartContext'
 import { Button } from '@/components/ui/button'
-import { Trash } from 'lucide-react'
+import { CartResponse } from '@/interfaces'
+import { count, log } from 'console'
+import { Loader, Trash } from 'lucide-react'
 import Image from 'next/image'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
+import toast from 'react-hot-toast'
 
 export default function Cart() {
 
-  const { cartData, isLoading, getCart } = useContext(CartContext)
+  const { cartData, isLoading, getCart, setCartData } = useContext(CartContext)
+  const [removingId, setRemovingId] = useState<null | string>(null)
+  const [updatingingId, setUpdatingingId] = useState<null | string>(null)
+  const [isClearing, setIsClearing] = useState<boolean>(false)
 
   // This line To fix API issue product string
-  typeof cartData?.data.products[0].product == 'string' && getCart()
+  if ( typeof cartData?.data.products[0]?.product == 'string' || cartData == null ) {
+    getCart()
+  } 
+
+
+  // Remove Specific item from Cart Function
+  async function removeCartItem(productId: string) {
+    setRemovingId(productId)
+    const response = await fetch('https://ecommerce.routemisr.com/api/v1/cart/' + productId, {
+      method: 'DELETE',
+      headers: {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2RjNGI5MzI2MzUwYmE3NTcyN2NiNCIsIm5hbWUiOiJTaGVyaWYgYXNocmFmIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzAwNjE1MjAsImV4cCI6MTc3NzgzNzUyMH0.uxLQdBVV3_uuh9cTUxbH2tRtG6FSVgSNSiUJyCC0G0w'
+      }
+    })
+    const data: CartResponse = await response.json()
+    console.log(data);
+
+    if (data.status == 'success') {
+      toast.success('Product Deleted')
+      setCartData(data)
+    }
+    setRemovingId(null)
+  }
+
+  // Update Count Of items from The Same Product Function
+  async function updateCartItem(productId: string, count: number) {
+
+    // Remove The item if Equal Zero 
+    if ( count <= 0 ) {
+      removeCartItem(productId)
+    }
+
+    setUpdatingingId(productId)
+    const response = await fetch('https://ecommerce.routemisr.com/api/v1/cart/' + productId, {
+      method: 'PUT',
+      body: JSON.stringify({ count }),
+      headers: {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2RjNGI5MzI2MzUwYmE3NTcyN2NiNCIsIm5hbWUiOiJTaGVyaWYgYXNocmFmIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzAwNjE1MjAsImV4cCI6MTc3NzgzNzUyMH0.uxLQdBVV3_uuh9cTUxbH2tRtG6FSVgSNSiUJyCC0G0w',
+        'content-type': 'application/json'
+      }
+    })
+    const data: CartResponse = await response.json()
+    console.log(data);
+
+    if (data.status == 'success') {
+      toast.success('Product Quantity Updated')
+      setCartData(data)
+    }
+    setUpdatingingId(null)
+  }
+
+  // Clear All Cart
+  async function clearCart() {
+    setIsClearing(true)
+    const response = await fetch('https://ecommerce.routemisr.com/api/v1/cart', {
+      method: 'DELETE',
+      headers: {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2RjNGI5MzI2MzUwYmE3NTcyN2NiNCIsIm5hbWUiOiJTaGVyaWYgYXNocmFmIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzAwNjE1MjAsImV4cCI6MTc3NzgzNzUyMH0.uxLQdBVV3_uuh9cTUxbH2tRtG6FSVgSNSiUJyCC0G0w',
+      }
+    })
+    const data: CartResponse = await response.json()
+    console.log(data);
+
+    if (data.message == 'success') {
+      toast.success('Cart is Clear')
+      setCartData(null)
+      
+    }
+    setIsClearing(false)
+  }
+
+
 
   return (
     <>
-      {isLoading || typeof cartData?.data.products[0].product == 'string' ? <Loading /> :
+      {isLoading || typeof cartData?.data.products[0]?.product == 'string' ? <Loading /> :
         <div className="container mx-auto py-6 px-4">
 
           <h1 className='text-3xl font-bold tracking-tight'>Shopping Cart</h1>
@@ -46,17 +123,19 @@ export default function Cart() {
 
                     <div className="mt-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <button aria-label='decrease' className='size-8 rounded-lg border hover:bg-accent'>
+                        <button disabled={ item.count == 1 } onClick={() => { updateCartItem(item.product.id, (item.count - 1)) }} aria-label='decrease' className='size-8 rounded-lg border hover:bg-accent'>
                           -
                         </button>
                         <span className='w-6 text-center font-medium'>
-                          {item.count}
+                          { updatingingId == item.product.id ? <Loader className='animate-spin duration-200' /> : item.count}
                         </span>
-                        <button aria-label='increace' className='size-8 rounded-lg border hover:bg-accent'>
+                        <button onClick={() => { updateCartItem(item.product.id, (item.count + 1)) }} aria-label='increace' className='size-8 rounded-lg border hover:bg-accent'>
                           +
                         </button>
                       </div>
-                      <button aria-label='remove' className='text-sm cursor-pointer flex text-destructive hover:underline items-center'>
+                      <button onClick={() => removeCartItem(item.product.id)} aria-label='remove' className='text-sm cursor-pointer flex text-white hover:scale-105 duration-200 items-center bg-red-500 p-2 rounded-xl gap-2'>
+                        {/* add Loader only when removingId == item.product.id Not in all items  */}
+                        {removingId == item.product.id && <Loader className='animate-spin duration-200' />}
                         Remove
                       </button>
                     </div>
@@ -93,7 +172,7 @@ export default function Cart() {
                   <Button className='w-full text-lg mt-2'> Continue Shopping </Button>
                 </div>
 
-                <Button variant={'outline'} className='mt-2 ms-auto text-destructive hover:text-destructive flex'> <Trash /> Clear Cart </Button>
+                <Button onClick={() => { clearCart() }} variant={'outline'} className='mt-2 ms-auto text-destructive hover:text-destructive flex'> <Trash /> Clear Cart </Button>
               </div>
 
             </div>

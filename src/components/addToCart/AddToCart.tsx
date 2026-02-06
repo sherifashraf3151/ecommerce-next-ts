@@ -26,7 +26,7 @@ export default function AddToCart({ productId }: { productId: string }) {
       }
     })
     const data = await response.json();
-    data.status == 'success' && toast.success('Product Added To Cart Successfully');
+    data.status == 'success' && toast.success('Product Added To Cart');
     // await getCart()
     setCartData(data)
     setIsLoading(false);
