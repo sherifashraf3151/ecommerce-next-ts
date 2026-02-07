@@ -4,6 +4,7 @@ import { Button } from '../ui/button'
 import { Loader, ShoppingCartIcon } from 'lucide-react'
 import toast from 'react-hot-toast';
 import { CartContext } from '../context/cartContext';
+import { addToCartAction } from '@/app/(pages)/products/_action/addToCart.action';
 
 interface AddToCartProps {
   productId: string;
@@ -18,25 +19,12 @@ export default function AddToCart({ productId, className }: AddToCartProps) {
 
   async function addProductToCart() {
     setIsLoading(true);
-    try {
-      const response = await fetch('https://ecommerce.routemisr.com/api/v1/cart', {
-        method: 'POST',
-        body: JSON.stringify({ productId }),
-        headers: {
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2RjNGI5MzI2MzUwYmE3NTcyN2NiNCIsIm5hbWUiOiJTaGVyaWYgYXNocmFmIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzAwNjE1MjAsImV4cCI6MTc3NzgzNzUyMH0.uxLQdBVV3_uuh9cTUxbH2tRtG6FSVgSNSiUJyCC0G0w',
-          'Content-Type': 'application/json'
-        }
-      })
-      const data = await response.json();
-      if (data.status === 'success') toast.success('Product Added To Cart');
-      setCartData(data)
-    } catch (error) {
-      toast.error('Failed to add product')
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
+    const data = await addToCartAction(productId)
+    data.status === 'success' && toast.success('Product Added To Cart');
+    setCartData(data)
+    setIsLoading(false);
+  }
   return (
     <Button
       disabled={isLoading}

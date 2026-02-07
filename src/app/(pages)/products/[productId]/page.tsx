@@ -64,11 +64,10 @@ export default async function ProductDetails({ params }: { params: Params }) {
             {/* AddToCart + Heart */}
             <div className="flex gap-4 items-center w-full">
               <AddToCart productId={product.id} className="flex-1" />
-              <HeartIcon className="w-8 h-8 text-black cursor-pointer transition-transform hover:scale-110" />
+              <HeartIcon className="w-8 h-8 text-black cursor-pointer transition-transform hover:scale-110 hover:text-red-500" />
             </div>
 
 
-            {/* Gallery للصور الإضافية على الشاشات الكبيرة */}
             <div className="hidden md:grid md:grid-cols-4 gap-3 mt-4">
               {product.images.map((img, index) => (
                 <Image

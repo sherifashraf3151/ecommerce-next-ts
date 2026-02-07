@@ -27,7 +27,6 @@ export default function CartContextProvider({ children }: { children: ReactNode 
     setIsLoading(true)
 
     try {
-      // تم التعديل هنا: انتظار response و تحويله لـ JSON
       const response = await fetch('http://localhost:3000/api/get-cart');
       const data: CartResponse = await response.json();
       setCartData(data)
